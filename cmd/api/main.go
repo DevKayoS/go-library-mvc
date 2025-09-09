@@ -4,6 +4,7 @@ import (
 	"log"
 
 	bookController "github.com/DevKayoS/go-library-mvc/internal/books/controllers"
+	loanController "github.com/DevKayoS/go-library-mvc/internal/loans/controllers"
 	userController "github.com/DevKayoS/go-library-mvc/internal/users/controllers"
 	"github.com/gin-gonic/gin"
 )
@@ -18,6 +19,10 @@ func main() {
 	// Book
 	bookController := bookController.NewBookController()
 	bookController.RegisterRoutes(router)
+
+	// Loan
+	loanController := loanController.NewLoanController()
+	loanController.RegisterRoutes(router)
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
