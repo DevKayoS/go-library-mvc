@@ -49,7 +49,6 @@ func (l *LoanService) CreateLoan(bookId int64, userId int64) (*loanModels.Loan, 
 
 	if len(activeLoans) > 0 {
 		return nil, errors.New("User has active loans")
-
 	}
 
 	book.Quantity = book.Quantity - 1
@@ -66,7 +65,8 @@ func (l *LoanService) CreateLoan(bookId int64, userId int64) (*loanModels.Loan, 
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}
-	err = l.loanRepo.CreateLoan(loan)
+
+	err = l.loanRepo.CreateLoan(*loan)
 	if err != nil {
 		return nil, err
 	}
