@@ -6,4 +6,5 @@ type LoanRepository interface {
 	GetLoan(id int64) (*Loan, error)
 	GetActiveUserLoan(userId int64) ([]*Loan, error)
 	GetAllLoan() ([]*Loan, error)
+	UpdateLoan(loan Loan) error
 }

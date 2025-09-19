@@ -85,8 +85,15 @@ func (l *LoanService) ReturnBook(loanId int64) error {
 	}
 
 	book.Quantity = book.Quantity + 1
-	err = l.bookService.UpdateBook(book.Id, book)
-	if err != nil {
+	if err = l.bookService.UpdateBook(book.Id, book); err != nil {
+		return err
+	}
+
+	loan.Status = "returned"
+	loan.ReturnedAt = time.Now()
+	loan.UpdatedAt = time.Now()
+
+	if err = l.loanRepo.UpdateLoan(*loan); err != nil {
 		return err
 	}
 
