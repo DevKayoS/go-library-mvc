@@ -5,6 +5,7 @@ import (
 	"time"
 
 	bookModels "github.com/DevKayoS/go-library-mvc/internal/books/models"
+	"github.com/DevKayoS/go-library-mvc/internal/loans/models"
 	loanModels "github.com/DevKayoS/go-library-mvc/internal/loans/models"
 	userModels "github.com/DevKayoS/go-library-mvc/internal/users/models"
 )
@@ -61,7 +62,7 @@ func (l *LoanService) CreateLoan(bookId int64, userId int64) (*loanModels.Loan, 
 		UserId:     userId,
 		BookId:     bookId,
 		BorrowedAt: time.Now(),
-		Status:     "ACTIVE",
+		Status:     models.Active,
 		CreatedAt:  time.Now(),
 		UpdatedAt:  time.Now(),
 	}
@@ -89,11 +90,11 @@ func (l *LoanService) ReturnBook(loanId int64) error {
 		return err
 	}
 
-	loan.Status = "returned"
+	loan.Status = models.Returned
 	loan.ReturnedAt = time.Now()
 	loan.UpdatedAt = time.Now()
 
-	if err = l.loanRepo.UpdateLoan(*loan); err != nil {
+	if err = l.loanRepo.UpdateLoan(loan); err != nil {
 		return err
 	}
 

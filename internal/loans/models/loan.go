@@ -12,3 +12,8 @@ type Loan struct {
 	CreatedAt  time.Time `json:"createdAt"`
 	UpdatedAt  time.Time `json:"updatedAt"`
 }
+
+const (
+	Active   = "active"
+	Returned = "returned"
+)
