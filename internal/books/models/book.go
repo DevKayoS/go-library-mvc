@@ -4,7 +4,7 @@ import "time"
 
 type Book struct {
 	Id        int64     `json:"id"`
-	Title     string    `json:"title" binding:"required, min=3"`
+	Title     string    `json:"title" binding:"required"`
 	Author    string    `json:"author" binding:"required,min=3"`
 	Quantity  int       `json:"qtd" binding:"required,min=1"`
 	CreatedAt time.Time `json:"createdAt"`

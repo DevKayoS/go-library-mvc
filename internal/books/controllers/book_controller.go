@@ -42,7 +42,6 @@ func (b *BookController) CreateBook(ctx *gin.Context) {
 	}
 
 	err := b.bookService.CreateBook(&book)
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": false,
@@ -62,7 +61,6 @@ func (b *BookController) CreateBook(ctx *gin.Context) {
 
 func (b *BookController) GetBook(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
@@ -91,7 +89,6 @@ func (b *BookController) GetBook(ctx *gin.Context) {
 
 func (b *BookController) GetAllBook(ctx *gin.Context) {
 	book, err := b.bookService.GetAllBook()
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": false,
@@ -110,7 +107,6 @@ func (b *BookController) GetAllBook(ctx *gin.Context) {
 
 func (b *BookController) UpdateBook(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
@@ -150,7 +146,6 @@ func (b *BookController) UpdateBook(ctx *gin.Context) {
 
 func (b *BookController) DeleteBook(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
