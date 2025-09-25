@@ -6,6 +6,7 @@ import (
 	bookService "github.com/DevKayoS/go-library-mvc/internal/books/services"
 	loanService "github.com/DevKayoS/go-library-mvc/internal/loans/services"
 	userService "github.com/DevKayoS/go-library-mvc/internal/users/services"
+	"github.com/gin-contrib/cors"
 
 	bookRepository "github.com/DevKayoS/go-library-mvc/internal/books/repositories"
 	loanRepository "github.com/DevKayoS/go-library-mvc/internal/loans/repositories"
@@ -37,6 +38,13 @@ func main() {
 	loanService := loanService.NewLoanService(loanRepository, bookService, userService)
 	loanController := loanController.NewLoanController(loanService)
 	loanController.RegisterRoutes(router)
+
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
+
+	router.Use(cors.New(config))
 
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal(err)
