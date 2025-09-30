@@ -15,6 +15,7 @@ import (
 	bookController "github.com/DevKayoS/go-library-mvc/internal/books/controllers"
 	loanController "github.com/DevKayoS/go-library-mvc/internal/loans/controllers"
 	userController "github.com/DevKayoS/go-library-mvc/internal/users/controllers"
+	webController "github.com/DevKayoS/go-library-mvc/internal/web/controller"
 	"github.com/gin-gonic/gin"
 )
 
@@ -38,6 +39,9 @@ func main() {
 	loanService := loanService.NewLoanService(loanRepository, bookService, userService)
 	loanController := loanController.NewLoanController(loanService)
 	loanController.RegisterRoutes(router)
+
+	// Web
+	webController := webController.NewWebController(bookService, userService, loanService)
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true

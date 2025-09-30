@@ -13,6 +13,7 @@ type Loan struct {
 	UpdatedAt  time.Time `json:"updatedAt"`
 }
 
+// TODO: fazer um model de status para as loans
 const (
 	Active   = "active"
 	Returned = "returned"
