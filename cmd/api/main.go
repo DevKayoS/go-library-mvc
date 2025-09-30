@@ -42,6 +42,7 @@ func main() {
 
 	// Web
 	webController := webController.NewWebController(bookService, userService, loanService)
+	webController.RegisterRoutes(router)
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
