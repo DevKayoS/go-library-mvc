@@ -34,6 +34,8 @@ func NewWebController(
 
 func (wc *WebController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/", wc.ServeHome)
+	router.GET("/users", wc.ServeUser)
+	router.POST("/users", wc.CreateUser)
 }
 
 func (wc *WebController) ServeHome(ctx *gin.Context) {
@@ -56,6 +58,7 @@ func (wc *WebController) ServeHome(ctx *gin.Context) {
 	}
 
 	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
+
 	data := map[string]interface{}{
 		"Title":         "Sistema de Biblioteca",
 		"Books":         books,
@@ -72,6 +75,7 @@ func (wc *WebController) ServeHome(ctx *gin.Context) {
 			"AvailableBooks": availableBooks,
 		},
 	}
+
 	err := wc.templates.ExecuteTemplate(ctx.Writer, "layout", data)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "Algo deu errado, por favor tente novamente mais tarde %v", err)
@@ -92,4 +96,43 @@ func (wc *WebController) getFlashMessage(ctx *gin.Context) (string, string) {
 	ctx.SetCookie("flash_type", "", 1, "/", "", false, true)
 
 	return message, messageType
+}
+
+func (wc *WebController) ServeUser(ctx *gin.Context) {
+	users, _ := wc.userService.GetAllUser()
+
+	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
+
+	data := map[string]interface{}{
+		"Title":         "Gerenciamento de Usuarios!",
+		"Users":         users,
+		"ActiveSection": "users",
+		"FlashMessage":  flashMessage,
+		"FlashType":     flashMessageType,
+	}
+
+	err := wc.templates.ExecuteTemplate(ctx.Writer, "layout", data)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Algo deu errado, por favor tente novamente mais tarde %v", err)
+		return
+	}
+}
+
+func (wc *WebController) CreateUser(ctx *gin.Context) {
+	name := ctx.PostForm("name")
+	email := ctx.PostForm("email")
+
+	user := userService.User{
+		Name:  name,
+		Email: email,
+	}
+
+	err := wc.userService.CreateUser(&user)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao criar usuario: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao criar usuario", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/users")
 }

@@ -21,24 +21,25 @@ import (
 
 func main() {
 	router := gin.Default()
+	apiGroup := router.Group("/api")
 
 	// users
 	userRepository := userRepository.NewUserRepository()
 	userService := userService.NewUserService(userRepository)
 	userController := userController.NewUserController(userService)
-	userController.RegisterRoutes(router)
+	userController.RegisterRoutes(apiGroup)
 
 	// Book
 	bookRepository := bookRepository.NewBookRepository()
 	bookService := bookService.NewBookService(bookRepository)
 	bookController := bookController.NewBookController(bookService)
-	bookController.RegisterRoutes(router)
+	bookController.RegisterRoutes(apiGroup)
 
 	// Loan
 	loanRepository := loanRepository.NewLoanRepository()
 	loanService := loanService.NewLoanService(loanRepository, bookService, userService)
 	loanController := loanController.NewLoanController(loanService)
-	loanController.RegisterRoutes(router)
+	loanController.RegisterRoutes(apiGroup)
 
 	// Web
 	webController := webController.NewWebController(bookService, userService, loanService)

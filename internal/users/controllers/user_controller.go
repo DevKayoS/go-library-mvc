@@ -18,7 +18,7 @@ func NewUserController(userService models.UserService) *UserController {
 	}
 }
 
-func (c *UserController) RegisterRoutes(r *gin.Engine) {
+func (c *UserController) RegisterRoutes(r *gin.RouterGroup) {
 	users := r.Group("/users")
 	{
 		users.POST("", c.CreateUser)
@@ -42,7 +42,6 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 	}
 
 	err := c.userService.CreateUser(&user)
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": false,
@@ -62,7 +61,6 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 
 func (c *UserController) GetUser(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
@@ -91,7 +89,6 @@ func (c *UserController) GetUser(ctx *gin.Context) {
 
 func (c *UserController) GetAllUser(ctx *gin.Context) {
 	user, err := c.userService.GetAllUser()
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": false,
@@ -110,7 +107,6 @@ func (c *UserController) GetAllUser(ctx *gin.Context) {
 
 func (c *UserController) UpdateUser(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
@@ -150,7 +146,6 @@ func (c *UserController) UpdateUser(ctx *gin.Context) {
 
 func (c *UserController) DeleteUser(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,

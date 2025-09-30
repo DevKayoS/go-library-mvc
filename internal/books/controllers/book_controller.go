@@ -18,7 +18,7 @@ func NewBookController(bookService models.BookService) *BookController {
 	}
 }
 
-func (b *BookController) RegisterRoutes(r *gin.Engine) {
+func (b *BookController) RegisterRoutes(r *gin.RouterGroup) {
 	Books := r.Group("/books")
 	{
 		Books.POST("", b.CreateBook)

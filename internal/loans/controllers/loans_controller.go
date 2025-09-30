@@ -18,7 +18,7 @@ func NewLoanController(loanService models.LoanService) *LoanController {
 	}
 }
 
-func (l *LoanController) RegisterRoutes(r *gin.Engine) {
+func (l *LoanController) RegisterRoutes(r *gin.RouterGroup) {
 	loans := r.Group("/loans")
 	{
 		loans.POST("", l.CreateLoan)
@@ -29,7 +29,6 @@ func (l *LoanController) RegisterRoutes(r *gin.Engine) {
 	user := r.Group("/loans/users")
 	{
 		user.GET("/:userId", l.GetUserLoan)
-
 	}
 }
 
@@ -49,7 +48,6 @@ func (l *LoanController) CreateLoan(ctx *gin.Context) {
 	}
 
 	loan, err := l.loanService.CreateLoan(request.BookId, request.UserId)
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": false,
@@ -65,12 +63,10 @@ func (l *LoanController) CreateLoan(ctx *gin.Context) {
 		"message": "Created successfully",
 		"data":    loan,
 	})
-
 }
 
 func (l *LoanController) GetLoan(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
@@ -99,7 +95,6 @@ func (l *LoanController) GetLoan(ctx *gin.Context) {
 
 func (l *LoanController) GetAllLoan(ctx *gin.Context) {
 	loan, err := l.loanService.GetAllLoan()
-
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"status": false,
@@ -118,7 +113,6 @@ func (l *LoanController) GetAllLoan(ctx *gin.Context) {
 
 func (l *LoanController) ReturnBook(ctx *gin.Context) {
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
@@ -147,7 +141,6 @@ func (l *LoanController) ReturnBook(ctx *gin.Context) {
 
 func (l *LoanController) GetUserLoan(ctx *gin.Context) {
 	userId, err := strconv.ParseInt(ctx.Param("userId"), 10, 64)
-
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": false,
