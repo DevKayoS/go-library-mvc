@@ -103,11 +103,11 @@
                 <span class="card-status status-active">Ativo</span>
             </div>
             <p><strong>Email:</strong> {{.Email}}</p>
-            <p><strong>ID:</strong> {{.ID}}</p>
+            <p><strong>ID:</strong> {{.Id}}</p>
             <div class="actions">
-                <a href="/users/{{.ID}}/edit" class="btn btn-primary btn-sm">✏️ Editar</a>
-                <a href="/users/{{.ID}}/loans" class="btn btn-warning btn-sm">📚 Ver Empréstimos</a>
-                <form action="/users/{{.ID}}/delete" method="POST" style="display: inline;"
+                <a href="/users/{{.Id}}/edit" class="btn btn-primary btn-sm">✏️ Editar</a>
+                <a href="/users/{{.Id}}/loans" class="btn btn-warning btn-sm">📚 Ver Empréstimos</a>
+                <form action="/users/{{.Id}}/delete" method="POST" style="display: inline;"
                     onsubmit="return confirm('Tem certeza que deseja excluir este usuário?')">
                     <button type="submit" class="btn btn-danger btn-sm">🗑️ Excluir</button>
                 </form>

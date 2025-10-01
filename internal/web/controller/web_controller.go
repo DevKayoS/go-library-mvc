@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 
@@ -100,7 +101,7 @@ func (wc *WebController) getFlashMessage(ctx *gin.Context) (string, string) {
 
 func (wc *WebController) ServeUser(ctx *gin.Context) {
 	users, _ := wc.userService.GetAllUser()
-
+	fmt.Println("users", &users)
 	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
 
 	data := map[string]interface{}{
