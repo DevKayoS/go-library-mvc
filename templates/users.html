@@ -14,7 +14,7 @@
         <div class="card-header">
             <h3 class="card-title">✏️ Editar Usuário</h3>
         </div>
-        <form action="/users/{{.User.ID}}/edit" method="POST">
+        <form action="/users/{{.User.Id}}/edit" method="POST">
             <div class="form-group">
                 <label class="form-label">Nome:</label>
                 <input type="text" name="name" class="form-input" value="{{.User.Name}}" required>

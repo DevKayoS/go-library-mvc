@@ -1,9 +1,9 @@
 package controller
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 
 	bookService "github.com/DevKayoS/go-library-mvc/internal/books/models"
 	loanModels "github.com/DevKayoS/go-library-mvc/internal/loans/models"
@@ -37,6 +37,9 @@ func (wc *WebController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/", wc.ServeHome)
 	router.GET("/users", wc.ServeUser)
 	router.POST("/users", wc.CreateUser)
+	router.POST("/users/:id/delete", wc.DeleteUser)
+	router.POST("/users/:id/edit", wc.UpdateUser)
+	router.GET("/users/:id/edit", wc.EditUser)
 }
 
 func (wc *WebController) ServeHome(ctx *gin.Context) {
@@ -101,7 +104,7 @@ func (wc *WebController) getFlashMessage(ctx *gin.Context) (string, string) {
 
 func (wc *WebController) ServeUser(ctx *gin.Context) {
 	users, _ := wc.userService.GetAllUser()
-	fmt.Println("users", &users)
+
 	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
 
 	data := map[string]interface{}{
@@ -136,4 +139,93 @@ func (wc *WebController) CreateUser(ctx *gin.Context) {
 	}
 
 	ctx.Redirect(http.StatusSeeOther, "/users")
+}
+
+func (wc *WebController) DeleteUser(ctx *gin.Context) {
+	userIDString := ctx.Param("id")
+
+	userID, err := strconv.ParseInt(userIDString, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Id do usuario invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/users")
+		return
+	}
+
+	err = wc.userService.DeleteUser(userID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao deletar usuario: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao deletar usuario", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/users")
+}
+
+func (wc *WebController) UpdateUser(ctx *gin.Context) {
+	userIDString := ctx.Param("id")
+
+	userID, err := strconv.ParseInt(userIDString, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Id do usuario invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/users")
+		return
+	}
+
+	user, err := wc.userService.GetUser(userID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao tentar pegar o usuario: "+err.Error(), "error")
+		ctx.Redirect(http.StatusSeeOther, "/users")
+		return
+	}
+
+	name := ctx.PostForm("name")
+	email := ctx.PostForm("email")
+
+	user.Name = name
+	user.Email = email
+
+	err = wc.userService.UpdateUser(userID, user)
+
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao atualizar usuario: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao atualizar usuario", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/users")
+}
+
+func (wc *WebController) EditUser(ctx *gin.Context) {
+	userIDString := ctx.Param("id")
+
+	userID, err := strconv.ParseInt(userIDString, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Id do usuario invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/users")
+		return
+	}
+
+	user, err := wc.userService.GetUser(userID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao tentar pegar o usuario: "+err.Error(), "error")
+		ctx.Redirect(http.StatusSeeOther, "/users")
+		return
+	}
+
+	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
+
+	data := map[string]interface{}{
+		"Title":         "Editar Usuarios!",
+		"User":          user,
+		"ActiveSection": "users",
+		"FlashMessage":  flashMessage,
+		"FlashType":     flashMessageType,
+		"IsEdit":        true,
+	}
+
+	err = wc.templates.ExecuteTemplate(ctx.Writer, "layout", data)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Algo deu errado, por favor tente novamente mais tarde %v", err)
+		return
+	}
 }
