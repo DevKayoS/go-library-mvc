@@ -40,6 +40,12 @@ func (wc *WebController) RegisterRoutes(router *gin.Engine) {
 	router.POST("/users/:id/delete", wc.DeleteUser)
 	router.POST("/users/:id/edit", wc.UpdateUser)
 	router.GET("/users/:id/edit", wc.EditUser)
+
+	router.GET("/books", wc.ServeBook)
+	router.POST("/books", wc.CreateBook)
+	router.POST("/books/:id/delete", wc.DeleteBook)
+	router.POST("/boos/:id/edit", wc.UpdateBook)
+	router.GET("/books/:id/edit", wc.EditBook)
 }
 
 func (wc *WebController) ServeHome(ctx *gin.Context) {
@@ -218,6 +224,152 @@ func (wc *WebController) EditUser(ctx *gin.Context) {
 		"Title":         "Editar Usuarios!",
 		"User":          user,
 		"ActiveSection": "users",
+		"FlashMessage":  flashMessage,
+		"FlashType":     flashMessageType,
+		"IsEdit":        true,
+	}
+
+	err = wc.templates.ExecuteTemplate(ctx.Writer, "layout", data)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Algo deu errado, por favor tente novamente mais tarde %v", err)
+		return
+	}
+}
+
+func (wc *WebController) ServeBook(ctx *gin.Context) {
+	books, _ := wc.bookService.GetAllBook()
+
+	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
+
+	data := map[string]interface{}{
+		"Title":         "Gerenciamento de Livros!",
+		"Books":         books,
+		"ActiveSection": "books",
+		"FlashMessage":  flashMessage,
+		"FlashType":     flashMessageType,
+	}
+
+	err := wc.templates.ExecuteTemplate(ctx.Writer, "layout", data)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Algo deu errado, por favor tente novamente mais tarde %v", err)
+		return
+	}
+}
+
+func (wc *WebController) CreateBook(ctx *gin.Context) {
+	author := ctx.PostForm("author")
+	title := ctx.PostForm("title")
+	quantityString := ctx.PostForm("quantity")
+
+	quantity, err := strconv.Atoi(quantityString)
+	if err != nil {
+		wc.addFlashMessage(ctx, "A quantidade e um valor invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/books")
+		return
+	}
+
+	book := bookService.Book{
+		Title:    title,
+		Author:   author,
+		Quantity: quantity,
+	}
+
+	err = wc.bookService.CreateBook(&book)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao criar usuario: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao criar usuario", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/users")
+}
+
+func (wc *WebController) DeleteBook(ctx *gin.Context) {
+	bookIDString := ctx.Param("id")
+
+	bookID, err := strconv.ParseInt(bookIDString, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Id do livro invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/books")
+		return
+	}
+
+	err = wc.bookService.DeleteBook(bookID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao deletar livro: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao deletar livro", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/books")
+}
+
+func (wc *WebController) UpdateBook(ctx *gin.Context) {
+	bookIDString := ctx.Param("id")
+
+	bookID, err := strconv.ParseInt(bookIDString, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Id do livro invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/books")
+		return
+	}
+
+	book, err := wc.bookService.GetBook(bookID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao tentar pegar o livro: "+err.Error(), "error")
+		ctx.Redirect(http.StatusSeeOther, "/books")
+		return
+	}
+
+	author := ctx.PostForm("author")
+	title := ctx.PostForm("title")
+	quantityString := ctx.PostForm("quantity")
+
+	quantity, err := strconv.Atoi(quantityString)
+	if err != nil {
+		wc.addFlashMessage(ctx, "A quantidade e um valor invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/books")
+		return
+	}
+
+	book.Author = author
+	book.Quantity = quantity
+	book.Title = title
+
+	err = wc.bookService.UpdateBook(bookID, book)
+
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao atualizar o livro: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao atualizar o livro", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/books")
+}
+
+func (wc *WebController) EditBook(ctx *gin.Context) {
+	bookIDString := ctx.Param("id")
+
+	bookID, err := strconv.ParseInt(bookIDString, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Id do livro invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/books")
+		return
+	}
+
+	book, err := wc.bookService.GetBook(bookID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao tentar pegar o livro: "+err.Error(), "error")
+		ctx.Redirect(http.StatusSeeOther, "/books")
+		return
+	}
+
+	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
+
+	data := map[string]interface{}{
+		"Title":         "Editar Livro!",
+		"Book":          book,
+		"ActiveSection": "book",
 		"FlashMessage":  flashMessage,
 		"FlashType":     flashMessageType,
 		"IsEdit":        true,
