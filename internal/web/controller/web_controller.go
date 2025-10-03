@@ -44,7 +44,7 @@ func (wc *WebController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/books", wc.ServeBook)
 	router.POST("/books", wc.CreateBook)
 	router.POST("/books/:id/delete", wc.DeleteBook)
-	router.POST("/boos/:id/edit", wc.UpdateBook)
+	router.POST("/books/:id/edit", wc.UpdateBook)
 	router.GET("/books/:id/edit", wc.EditBook)
 }
 
@@ -281,7 +281,7 @@ func (wc *WebController) CreateBook(ctx *gin.Context) {
 		wc.addFlashMessage(ctx, "Sucesso ao criar usuario", "success")
 	}
 
-	ctx.Redirect(http.StatusSeeOther, "/users")
+	ctx.Redirect(http.StatusSeeOther, "/books")
 }
 
 func (wc *WebController) DeleteBook(ctx *gin.Context) {
@@ -369,7 +369,7 @@ func (wc *WebController) EditBook(ctx *gin.Context) {
 	data := map[string]interface{}{
 		"Title":         "Editar Livro!",
 		"Book":          book,
-		"ActiveSection": "book",
+		"ActiveSection": "books",
 		"FlashMessage":  flashMessage,
 		"FlashType":     flashMessageType,
 		"IsEdit":        true,
