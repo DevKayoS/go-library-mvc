@@ -46,6 +46,12 @@ func (wc *WebController) RegisterRoutes(router *gin.Engine) {
 	router.POST("/books/:id/delete", wc.DeleteBook)
 	router.POST("/books/:id/edit", wc.UpdateBook)
 	router.GET("/books/:id/edit", wc.EditBook)
+
+	router.GET("/loans", wc.ServeLoan)
+	router.POST("/loans", wc.CreateLoan)
+	router.POST("/loans/:id/delete", wc.DeleteLoan)
+	router.POST("/loans/:id/edit", wc.UpdateLoan)
+	router.GET("/loans/:id/edit", wc.EditLoan)
 }
 
 func (wc *WebController) ServeHome(ctx *gin.Context) {
@@ -380,4 +386,65 @@ func (wc *WebController) EditBook(ctx *gin.Context) {
 		ctx.String(http.StatusInternalServerError, "Algo deu errado, por favor tente novamente mais tarde %v", err)
 		return
 	}
+}
+
+func (wc *WebController) ServeLoan(ctx *gin.Context) {
+	loans, _ := wc.loanService.GetAllLoan()
+	books, _ := wc.bookService.GetAllBook()
+	users, _ := wc.userService.GetAllUser()
+
+	flashMessage, flashMessageType := wc.getFlashMessage(ctx)
+
+	data := map[string]interface{}{
+		"Title":         "Gerenciamento de Emprestimos!",
+		"Loans":         loans,
+		"Books":         books,
+		"Users":         users,
+		"ActiveSection": "loans",
+		"FlashMessage":  flashMessage,
+		"FlashType":     flashMessageType,
+	}
+
+	err := wc.templates.ExecuteTemplate(ctx.Writer, "layout", data)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Algo deu errado, por favor tente novamente mais tarde %v", err)
+		return
+	}
+}
+
+func (wc *WebController) CreateLoan(ctx *gin.Context) {
+	userIDStr := ctx.PostForm("user_id")
+	bookIDStr := ctx.PostForm("book_id")
+
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Usuario invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/loans")
+		return
+	}
+
+	bookID, err := strconv.ParseInt(bookIDStr, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Livro invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/loans")
+		return
+	}
+
+	_, err = wc.loanService.CreateLoan(bookID, userID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao criar emprestimo: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao criar emprestimo", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/loans")
+}
+
+func (wc *WebController) UpdateLoan(ctx *gin.Context) {
+}
+
+func (wc *WebController) EditLoan(ctx *gin.Context) {
+}
+
+func (wc *WebController) DeleteLoan(ctx *gin.Context) {
 }

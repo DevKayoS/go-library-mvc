@@ -67,7 +67,7 @@
                 <select class="form-select" name="user_id" required>
                     <option value="">Selecione um usuário</option>
                     {{range .Users}}
-                    <option value="{{.ID}}">{{.Name}} ({{.Email}})</option>
+                    <option value="{{.Id}}">{{.Name}} ({{.Email}})</option>
                     {{end}}
                 </select>
             </div>
@@ -77,7 +77,7 @@
                     <option value="">Selecione um livro</option>
                     {{range .Books}}
                     {{if gt .Quantity 0}}
-                    <option value="{{.ID}}">{{.Title}} - {{.Author}}</option>
+                    <option value="{{.Id}}">{{.Title}} - {{.Author}}</option>
                     {{end}}
                     {{end}}
                 </select>

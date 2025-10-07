@@ -34,20 +34,20 @@
         {{range .Loans}}
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Empréstimo #{{.ID}}</h3>
+                <h3 class="card-title">Empréstimo #{{.Id}}</h3>
                 <span class="card-status {{if eq .Status " active"}}status-active{{else}}status-returned{{end}}">
                     {{if eq .Status "active"}}Ativo{{else}}Devolvido{{end}}
                 </span>
             </div>
-            <p><strong>Livro ID:</strong> {{.BookID}}</p>
-            <p><strong>Usuário ID:</strong> {{.UserID}}</p>
+            <p><strong>Livro ID:</strong> {{.BookId}}</p>
+            <p><strong>Usuário ID:</strong> {{.UserId}}</p>
             <p><strong>Data do Empréstimo:</strong> {{.BorrowedAt.Format "02/01/2006 15:04"}}</p>
             {{if .ReturnedAt}}
             <p><strong>Data da Devolução:</strong> {{.ReturnedAt.Format "02/01/2006 15:04"}}</p>
             {{end}}
             <div class="actions">
                 {{if eq .Status "active"}}
-                <form action="/loans/{{.ID}}/return" method="POST" style="display: inline;">
+                <form action="/loans/{{.Id}}/return" method="POST" style="display: inline;">
                     <button type="submit" class="btn btn-success btn-sm">📚 Devolver</button>
                 </form>
                 {{end}}
