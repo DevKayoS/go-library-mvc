@@ -35,23 +35,28 @@ func NewWebController(
 
 func (wc *WebController) RegisterRoutes(router *gin.Engine) {
 	router.GET("/", wc.ServeHome)
+
 	router.GET("/users", wc.ServeUser)
 	router.POST("/users", wc.CreateUser)
 	router.POST("/users/:id/delete", wc.DeleteUser)
 	router.POST("/users/:id/edit", wc.UpdateUser)
 	router.GET("/users/:id/edit", wc.EditUser)
+	router.GET("/users/search", wc.SearchUser)
 
 	router.GET("/books", wc.ServeBook)
 	router.POST("/books", wc.CreateBook)
 	router.POST("/books/:id/delete", wc.DeleteBook)
 	router.POST("/books/:id/edit", wc.UpdateBook)
 	router.GET("/books/:id/edit", wc.EditBook)
+	router.GET("/books/search", wc.SearchBook)
 
 	router.GET("/loans", wc.ServeLoan)
 	router.POST("/loans", wc.CreateLoan)
 	router.POST("/loans/:id/delete", wc.DeleteLoan)
 	router.POST("/loans/:id/edit", wc.UpdateLoan)
 	router.GET("/loans/:id/edit", wc.EditLoan)
+	router.GET("/loans/:id/return", wc.ReturnBook)
+	router.GET("/loans/search", wc.SearchLoan)
 }
 
 func (wc *WebController) ServeHome(ctx *gin.Context) {
@@ -448,3 +453,30 @@ func (wc *WebController) EditLoan(ctx *gin.Context) {
 
 func (wc *WebController) DeleteLoan(ctx *gin.Context) {
 }
+
+func (wc *WebController) ReturnBook(ctx *gin.Context) {
+}
+
+func (wc *WebController) SearchLoan(ctx *gin.Context) {
+	loanIDStr := ctx.Param("id")
+
+	loanID, err := strconv.ParseInt(loanIDStr, 10, 64)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Emprestimo invalido", "error")
+		ctx.Redirect(http.StatusSeeOther, "/loans")
+		return
+	}
+
+	err = wc.loanService.ReturnBook(loanID)
+	if err != nil {
+		wc.addFlashMessage(ctx, "Erro ao tentar devolver livro: "+err.Error(), "error")
+	} else {
+		wc.addFlashMessage(ctx, "Sucesso ao devolver o livro", "success")
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/loans")
+}
+
+func (wc *WebController) SearchBook(ctx *gin.Context) {}
+
+func (wc *WebController) SearchUser(ctx *gin.Context) {}
