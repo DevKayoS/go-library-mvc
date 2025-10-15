@@ -88,7 +88,7 @@ func (wc *WebController) ServeHome(ctx *gin.Context) {
 		"ActiveSection": "dashboard",
 		"FlashMessage":  flashMessage,
 		"FlashType":     flashMessageType,
-		"Stats": map[string]interface{}{
+		"Stats": map[string]any{
 			"TotalBooks":     len(books),
 			"TotalUsers":     len(users),
 			"TotalLoans":     len(loans),
